@@ -9,6 +9,3 @@ sort_util = { git = "https://github.com/bzyjin/sort-util" }
 [features]
 default = []
 internal = []
-
-[profile.release]
-lto = "thin"
