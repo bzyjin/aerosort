@@ -1,0 +1,14 @@
+[package]
+name = "aerosort"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sort_util = { git = "https://github.com/bzyjin/sort-util" }
+
+[features]
+default = []
+internal = []
+
+[profile.release]
+lto = "thin"
