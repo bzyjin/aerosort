@@ -21,7 +21,7 @@ fn sort_with_merge_strategy<T, F: FnMut(&T, &T) -> bool>(
 
 	// `0 <= i <= factor <= n <= isize::MAX` (`isize::MAX` is the maximum slice length), so we can
 	// fit `n * i <= isize::MAX * isize::MAX < 2^126` in a u128.
-	let factor = (1 << sort_util::op::log2_ceil(n / 16)) as u128;
+	let factor = (1 << sort_util::op::log2_ceil(n) - 4) as u128;
 	let bound = |i| (n as u128 * i / factor) as usize;
 
 	// Merge sort loop
