@@ -34,6 +34,8 @@ characteristics
 - prove/rigorously test correctness
 - safety
 - simplify logic even further (remove block selection "optimizations"?)
+- improve redistribution step
+- implement right-side key collection (?)
 ```
 
 ## Interface
@@ -55,7 +57,7 @@ The overall implementation is based on [GrailSort](https://github.com/Mrrl/Grail
 
 ### Collecting keys
 
-When given a buffer of size `m >= ⌊n / 2⌋`, aerosort does not collect any keys. Otherwise, it always tries to collect around `sqrt 2n` keys. Key collection is done at the beginning like in GrailSort. With large `n`, we can reduce comparisons by around 1% by collecting `2 sqrt n` keys, but it make the redistribution step slower, so for simplicity we ignore that strategy.
+When given a buffer of size `m >= ⌊n / 2⌋`, aerosort does not collect any keys. Otherwise, it always tries to collect around `sqrt 2n` keys. Key collection is done at the beginning like in GrailSort. With large `n`, we can reduce comparisons by around 1% by collecting `2 sqrt n` keys, but it makes the redistribution step slower, so for simplicity we ignore that strategy.
 
 Once key collection is done, we partition our keys into two portions. We never need to sort the tags portion -- it remains sorted between every merge operation. The array should look like this:
 ```
@@ -92,7 +94,7 @@ The most important advantages of our merging implementation is that we can have 
 
 #### Application in hybrid sorting algorithms
 
-Because we can perform such merges, we can substitute our strategy for regular merges in adaptive/natural sorting algorithms like [Powersort](https://github.com/sebawild/powersort).
+Because we can perform such merges, we can substitute our strategy for regular merges in adaptive/natural sorting algorithms like [Powersort](https://github.com/sebawild/powersort). However, we would either need to increase our key count to `2 sqrt n` or implement another set of block merge functions tagging the B-blocks.
 
 ### Merge sort loop
 
