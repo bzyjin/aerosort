@@ -47,6 +47,8 @@ The following interface is provided:
 
 To sort using a comparator, use the `_by` interface and pass a comparison function e.g. `sort_by(&mut v, cmp)`. This allows you to sort descending and into other desired patterns.
 
+To sort by key, use the `_by_key` interface and pass a mapping e.g. `sort_by_key(&mut v, f)`. This will sort ascending by key (lowest keys first).
+
 ## Algorithm
 
 The overall implementation is based on [GrailSort](https://github.com/Mrrl/GrailSort) (Andrey Astrelin) and [WikiSort](https://github.com/BonzaiThePenguin/WikiSort) (Mike McFadden).

@@ -18,6 +18,9 @@
 //! To sort using a comparator, use the `_by` extension and pass a comparison function e.g.
 //! [`sort_by`]`(&mut v, cmp)`. This allows you to sort descending and into other desired patterns.
 //!
+//! To sort by key, use the `_by_key` interface and pass a mapping e.g. [`sort_by_key`]
+//! `(&mut v, f)`. This will sort ascending by key (lowest keys first).
+//!
 //! The worst-case time complexity is always `O(n log n)` across all external space sizes.
 
 mod aero;
