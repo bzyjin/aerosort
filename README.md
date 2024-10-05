@@ -1,4 +1,6 @@
-aerosort is an implementation of [block merge sort](https://en.wikipedia.org/wiki/Block_sort) with fairly simple algorithmic logic. It is comparison-based, stable, and in-place by default.
+# aerosort
+
+**aerosort** is an implementation of [block merge sort](https://en.wikipedia.org/wiki/Block_sort) with fairly simple algorithmic logic. It is comparison-based, stable, and in-place by default.
 
 ```
 time (O)
