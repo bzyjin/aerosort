@@ -75,14 +75,17 @@ pub fn sort_full<T, F: FnMut(&T, &T) -> bool>(v: &mut [T], ext: &mut [T], less: 
     let mut state = crate::state::collect_keys(v, less);
 
     match state.keys.inner.len() {
+        // We have done something wrong
+        0 => return,
+
         // If the slice turns out to contain 1 value, we are done
         1 => (),
 
         // If the slice turns out to contain 12 or less values, just use rotation-based merging
-        cnt if 2 <= cnt && cnt <= 12 => sort_lazy(v, less),
+        2..=12 => sort_lazy(v, less),
 
         // Perform normal block merge sort
-        _ => {
+        13.. => {
             sort(state.task, ext, &mut state.keys, less);
             state.restore_by(less);
         }
