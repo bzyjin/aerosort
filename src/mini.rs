@@ -44,7 +44,7 @@ pub fn heap_sort<T, F: FnMut(&T, &T) -> bool>(v: &mut [T], less: &mut F) {
         (0..n / 2).rev().for_each(|i| sift_down(v, i, less));
 
         for i in (1..n).rev() {
-            v.swap_unchecked(0, i);
+            v.swap(0, i);
             sift_down(&mut v[..i], 0, less);
         }
     }

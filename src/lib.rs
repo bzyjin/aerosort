@@ -1,11 +1,5 @@
+#![no_std]
 #![deny(missing_docs)]
-#![feature(
-    ptr_sub_ptr,
-    isqrt,
-    slice_swap_unchecked,
-    sized_type_properties,
-    iter_map_windows
-)]
 
 //! aerosort is a sorting library. It is comparison-based, stable, and in-place by default. The
 //! following interface is provided:
@@ -86,10 +80,8 @@ pub fn sort_with_by_key<T, K: Ord>(
 
 #[inline(always)]
 fn sort_general<T, F: FnMut(&T, &T) -> bool>(v: &mut [T], ext: &mut [T], less: &mut F) {
-    use core::mem::SizedTypeProperties;
-
     // Skip zero-sized types
-    if !T::IS_ZST {
+    if core::mem::size_of::<T>() != 0 {
         aero::sort_full(v, ext, less);
     }
 }

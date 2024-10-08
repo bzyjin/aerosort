@@ -20,7 +20,7 @@ impl<T> LeftCollectState<T> {
             return;
         };
 
-        let shift = key.sub_ptr(self.location) - self.keys;
+        let shift = key.offset_from(self.location) as usize - self.keys;
         op::rotate(self.location, self.keys + shift, self.keys);
         self.location = self.location.add(shift);
 
@@ -54,7 +54,7 @@ impl<T> LeftCollectState<T> {
     pub fn into_union_state<'a>(&mut self, v: &mut [T], buffer_len: usize) -> UnionState<'a, T> {
         let (s, n) = v.raw_mut();
         unsafe {
-            let shift = self.location.sub_ptr(s);
+            let shift = self.location.offset_from(s) as usize;
 
             // Scroll our collection to the left of `v` and rotate the interior to be sorted
             op::rotate(s, shift + self.keys, shift);
@@ -109,11 +109,15 @@ pub fn collect_keys<'a, T, F: FnMut(&T, &T) -> bool>(
 
     // Collecting `2 sqrt n` keys reduces total comparisons by ~1% with large `n`, but results in a
     // more expensive final redistribution, so we might as well not worry about that.
+    let mut k = lower_bound::binary(n, |i| i * i < 2 * n);
+    k -= (k * k != 2 * n) as usize;    // `keys == (2 * n).isqrt()`
+
+    // Collect up to `k` keys
     let mut collection = LeftCollectState::new(v.as_mut_ptr(), 1);
-    collection.scan(&mut v[1..], (2 * n).isqrt(), less);
+    collection.scan(&mut v[1..], k, less);
+    k = collection.keys;
 
     // We can expand our buffer as long as we have enough keys (an approximation is used here)
-    let k = collection.keys;
     let buffer_len = k - lower_bound::binary(k / 2, |len| len < (n - k) / 2 / (k - len));
 
     // Move our collection to the far left
