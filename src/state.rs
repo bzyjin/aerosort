@@ -56,7 +56,7 @@ impl<T> LeftCollectState<T> {
         unsafe {
             let shift = self.location.offset_from(s) as usize;
 
-            // Scroll our collection to the left of `v` and rotate the interior to be sorted
+            // Move our collection to the left of `v` and rotate the interior to be sorted
             op::rotate(s, shift + self.keys, shift);
 
             let (internal_buffer, task) = s.crop(0..n).split_at_mut(self.keys);
