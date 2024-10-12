@@ -68,7 +68,7 @@ impl<'a, T, F: FnMut(&T, &T) -> bool> MergeState<'a, T, F> {
     #[inline(never)]
     unsafe fn drop_once(&mut self, less: &mut F) -> BlockId {
         let (s, tags, na, _, epb) = self.context.constants;
-        let MergeState { context: _, pid: _, i, cnt_a, cnt_b, ai: min_a } = *self;
+        let MergeState { i, cnt_a, cnt_b, ai: min_a, .. } = *self;
 
         // Choose which block to drop (between first B-block and min. A-block)
         let bi = i + cnt_a;
