@@ -21,6 +21,7 @@ fn sort_with_merge_strategy<T, F: FnMut(&T, &T) -> bool>(
 
     // `0 <= i <= factor <= n <= isize::MAX` (`isize::MAX` is the maximum slice length), so we can
     // fit `n * i <= isize::MAX * isize::MAX < 2^126` in a u128.
+    #[allow(clippy::precedence)]    // Who cares
     let factor = (1 << sort_util::op::log2_ceil(n) - 4) as u128;
     let bound = |i| (n as u128 * i / factor) as usize;
 
@@ -76,7 +77,7 @@ pub fn sort_full<T, F: FnMut(&T, &T) -> bool>(v: &mut [T], ext: &mut [T], less: 
 
     match state.keys.inner.len() {
         // We have done something wrong
-        0 => return,
+        0 => unsafe { core::hint::unreachable_unchecked() },
 
         // If the slice turns out to contain 1 value, we are done
         1 => (),

@@ -82,7 +82,7 @@ impl<T> Merge<T> for Keys<'_, T> {
     /// Return `true` iff this key collection has at least one key.
     fn can_merge(&self, _: [&mut [T]; 2]) -> bool {
         // When we call this, we will have collected at least one key. At least, we better have.
-        self.inner.len() != 0 || unsafe { core::hint::unreachable_unchecked() }
+        !self.inner.is_empty() || unsafe { core::hint::unreachable_unchecked() }
     }
 }
 

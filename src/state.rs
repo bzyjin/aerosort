@@ -51,7 +51,7 @@ impl<T> LeftCollectState<T> {
 
     /// Move the key collection to the left of `v`, ensuring it is sorted ascending. Return a union
     /// state with keys that have an internal buffer of length `buffer_len`.
-    pub fn into_union_state<'a>(&mut self, v: &mut [T], buffer_len: usize) -> UnionState<'a, T> {
+    pub fn into_union_state<'a>(self, v: &mut [T], buffer_len: usize) -> UnionState<'a, T> {
         let (s, n) = v.raw_mut();
         unsafe {
             let shift = self.location.offset_from(s) as usize;
