@@ -117,7 +117,7 @@ pub fn collect_keys<'a, T, F: FnMut(&T, &T) -> bool>(
     collection.scan(&mut v[1..], k, less);
     k = collection.keys;
 
-    // We can expand our buffer as long as we have enough keys (an approximation is used here)
+    // We can expand our buffer as long as we have enough keys
     let buffer_len = k - lower_bound::binary(k / 2, |len| len < (n - k) / 2 / (k - len));
 
     // Move our collection to the far left
