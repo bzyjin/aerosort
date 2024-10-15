@@ -3,7 +3,7 @@ use core::ptr;
 
 use crate::internal::{self, scroll_right};
 use crate::keys::Keys;
-use crate::merge::{merge_down, merge_up};
+use crate::merge::merge_up;
 
 use sort_util::{GenerateSlice, RawMut, Sorted::{self, *}};
 
@@ -160,17 +160,23 @@ unsafe fn scrolling_block_merge<T, F: FnMut(&T, &T) -> bool>(
         init_min: &mut |_| na,
     }).merge_on(1..na + nb + 1, less) == Block::B {
         // The rest of the elements are from B; after merging our A-block up, we are done
-        merge_up::<_, true>([buf_origin.crop(0..epb), buf.add(epb).to(b.add(m))], buf, less);
+        merge_up::<_, true>([buf_origin.crop(0..epb), buf.add(epb).to(b.add(m))], less);
     } else {
         // The rest of the elements are from A; first merge B-block up
-        let a = buf.add(epb).to(b.add(m - qb));
-        let [rb, ra, merged] =
-            merge_up::<_, true>([b.crop(m - qb..m), a], buf, &mut |x, y| !less(y, x));
-        scroll_right(buf.add(merged), ra, epb - qb);
+        let [(a, n), (b, m)] = [buf.add(epb).to(b.add(m - qb)).raw_mut(), (b.add(m - qb), qb)];
 
-        // Merge (or drop if `rb == 0`) the saved A-block
-        let [a, b] = [buf_origin.crop(0..epb), b.add(m - epb - rb).crop(0..rb)];
-        merge_down::<_, true>([b, a], &mut |x, y| !less(y, x));
+        let [mut i, mut j] = [0, 0];
+        while i != n && j != m {
+            let [l, r] = [a.add(i), b.add(j)];
+            let right = less(&*r, &*l);
+            [i, j] = [i + !right as usize, j + right as usize];
+            ptr::swap_nonoverlapping(if right { r } else { l }, buf.add(i + j - 1), 1);
+        }
+
+        // After that step, we are left with some number of A-elements and B-elements; we scroll the
+        // buffer past all the A-elements, and we finish by merging up with the saved A-block
+        buf = scroll_right(buf.add(i + j), n - i, epb - j);
+        merge_up::<_, true>([buf_origin.crop(0..epb), buf.crop(epb..epb + m - j)], less);
     }
 
     Done

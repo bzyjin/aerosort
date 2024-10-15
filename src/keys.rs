@@ -68,8 +68,7 @@ impl<T> Keys<'_, T> {
         }
 
         if a.len() == shorter_side {
-            let dst = a.as_mut_ptr();
-            merge_up::<_, true>([unsafe { move_slice::<_, true>(self.buffer(), a) }, b], dst, less);
+            merge_up::<_, true>([unsafe { move_slice::<_, true>(self.buffer(), a) }, b], less);
         } else {
             merge_down::<_, true>([a, unsafe { move_slice::<_, true>(self.buffer(), b) }], less);
         }

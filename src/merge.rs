@@ -34,10 +34,8 @@ impl<T> MergeUnchecked<T> for [T] {
     /// Cost: `O(n + m)` comparisons and `O(n + m)` moves.
     fn merge_unchecked<F: FnMut(&T, &T) -> bool>(&mut self, [a, b]: [&mut [T]; 2], less: &mut F) {
         unsafe {
-            let a_ptr = a.as_mut_ptr();
             if a.len() <= b.len() {
-                let [a, b] = [move_slice::<_, false>(self.as_mut_ptr(), a), b];
-                merge_up::<_, false>([a, b], a_ptr, less);
+                merge_up::<_, false>([move_slice::<_, false>(self.as_mut_ptr(), a), b], less);
             } else {
                 merge_down::<_, false>([a, move_slice::<_, false>(self.as_mut_ptr(), b)], less);
             }
@@ -45,13 +43,10 @@ impl<T> MergeUnchecked<T> for [T] {
     }
 }
 
-/// Merge `a` and `b` starting at `dst` and building the result rightwards. Return the lengths of
-/// the tails of `a` and `b`, as well as the number of elements merged.
+/// Merge `a` and `b` starting at `dst` and building the result rightwards.
 ///
 /// Cost: `O(n + m)` comparisons and `O(n + m)` moves.
-pub fn merge_up<T, const S: bool>(
-    [a, b]: [&mut [T]; 2], dst: *mut T, less: &mut impl FnMut(&T, &T) -> bool,
-) -> [usize; 3] {
+pub fn merge_up<T, const S: bool>([a, b]: [&mut [T]; 2], less: &mut impl FnMut(&T, &T) -> bool) {
     // Represents the gap to the left of `b`
     struct Gap<T, const S: bool>(*mut T, usize, *mut T, usize, usize);
 
@@ -66,6 +61,7 @@ pub fn merge_up<T, const S: bool>(
     let [(a, n), (b, m)] = [a, b].map(RawMut::raw_mut);
 
     unsafe {
+        let dst = b.sub(n);
         let mut gap = Gap::<T, S>(a, n, dst, 0, 0);
 
         while gap.3 != n && gap.4 != m {
@@ -74,8 +70,6 @@ pub fn merge_up<T, const S: bool>(
             [gap.3, gap.4] = [gap.3 + !right as usize, gap.4 + right as usize];
             write::<_, S>(if right { r } else { l }, dst.add(gap.3 + gap.4 - 1), 1);
         }
-
-        [n - gap.3, m - gap.4, gap.3 + gap.4]
     }
 }
 
