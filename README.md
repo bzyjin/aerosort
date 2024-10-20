@@ -38,6 +38,12 @@ characteristics
 - implement right-side key collection (?)
 ```
 
+### Visualization
+
+https://github.com/user-attachments/assets/4b4e6064-f708-4d19-b9e9-2848703d62d8
+
+Here is a short visualization of aerosort fully sorting an extended bit-reversal permuted cubic input. It may be improved in the future.
+
 ## Interface
 
 The following interface is provided:
