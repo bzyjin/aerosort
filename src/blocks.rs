@@ -24,7 +24,7 @@ pub fn block_merge<T, F: FnMut(&T, &T) -> bool>(
 ) -> Sorted {
     unsafe {
         scrolling_block_merge(keys, [a, b], less)
-            .or(|| in_place_block_merge(keys, [a, b], less))
+            .or(|| rotation_block_merge(keys, [a, b], less))
     }
 }
 
@@ -185,7 +185,7 @@ unsafe fn scrolling_block_merge<T, F: FnMut(&T, &T) -> bool>(
 // Perform a block merge without a scrolling buffer.
 //
 // Cost: `O(n)` comparisons and `O(n)` moves.
-unsafe fn in_place_block_merge<T, F: FnMut(&T, &T) -> bool>(
+unsafe fn rotation_block_merge<T, F: FnMut(&T, &T) -> bool>(
     keys: &mut Keys<T>, [a, b]: [&mut [T]; 2], less: &mut F,
 ) -> Sorted {
     // `tags` points to the start of the tags portion of our key collection
