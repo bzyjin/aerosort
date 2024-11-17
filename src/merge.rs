@@ -108,7 +108,7 @@ pub fn merge_left<T, F: FnMut(&T, &T) -> bool>([a, b]: [&mut [T]; 2], less: &mut
 
     unsafe {
         while m != 0 {
-            let len = n - search::binary(a, n, &*a.add(n + m - 1), &mut |x, y| !less(y, x));
+            let len = n - search::binary(a, n, a.add(n + m - 1), &mut |x, y| !less(y, x));
             rotate(a.add(n - len), len + m, len);
             n -= len;
 
@@ -116,7 +116,7 @@ pub fn merge_left<T, F: FnMut(&T, &T) -> bool>([a, b]: [&mut [T]; 2], less: &mut
                 break;
             }
 
-            m = search::binary(a.add(n), m, &*a.add(n - 1), less);
+            m = search::binary(a.add(n), m, a.add(n - 1), less);
         }
     }
 }

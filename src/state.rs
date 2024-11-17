@@ -16,7 +16,7 @@ impl<T> LeftCollectState<T> {
     }
 
     unsafe fn insert<F: FnMut(&T, &T) -> bool>(&mut self, key: *mut T, less: &mut F) {
-        let Found(false, index) = search_unique(self.location, self.keys, &*key, less) else {
+        let Found(false, index) = search_unique(self.location, self.keys, key, less) else {
             return;
         };
 
