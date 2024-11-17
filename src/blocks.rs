@@ -142,11 +142,10 @@ unsafe fn scrolling_block_merge<T, F: FnMut(&T, &T) -> bool>(
     let na = na - 1;
     (0..na).for_each(|i| ptr::swap(tags.add(i), s.add(i * epb + 1)));
     ptr::swap_nonoverlapping(s, buf_origin, epb);
-    internal::scroll_left(s, qa, epb);
     ptr::swap_nonoverlapping(buf_origin, s.add(na * epb), (na != 0) as usize * epb);
 
     // Complete the block merge, excluding the tail elements (`qb`)
-    let (mut buf, mut excess) = (a, qa);
+    let (mut buf, mut excess) = (s, 0);
     if (MergeContext {
         constants: (s, tags, na, nb, epb),
         on_drop: &mut |id, pid, nb, less| {
@@ -178,6 +177,10 @@ unsafe fn scrolling_block_merge<T, F: FnMut(&T, &T) -> bool>(
         buf = scroll_right(buf.add(i + j), n - i, epb - j);
         merge_up::<_, true>([buf_origin.crop(0..epb), buf.crop(epb..epb + m - j)], less);
     }
+
+    // Merge undersized A-block up
+    ptr::swap_nonoverlapping(a, buf_origin, qa);
+    merge_up::<_, true>([buf_origin.crop(0..qa), a.crop(qa..n + m)], less);
 
     Done
 }
