@@ -109,19 +109,20 @@ In the interest of having `O(1)` space complexity, we emulate a top-down merge s
 ```
 MergeDepth(i)
     return largest k such that 2^k is a factor of i
+    e.g. # of trailing zeros
 
 MergeSort(A[0 : n])
     MIN = 16    // small run length
 
-    factor = 1 << Log2Ceil(n / MIN)     // # of small runs
-    RunBound(i) = n * i / factor
+    runs = 1 << Log2Ceil(n / MIN)     // # of small runs
+    RunBound(i) = n * i / runs 
 
-    for i = 1 to factor:
-        mid = RunBound(i - 1); right = RunBound(i)
-        SortSmall(A[mid..right])
+    for i = 1 to runs:
+        left = RunBound(i - 1); right = RunBound(i)
+        SortSmall(A[left..right])
 
         for k = 0 to MergeDepth(i) - 1:
-            left = RunBound(i - (2 << k)); mid = RunBound(i - (1 << k))
+            mid = left; left = RunBound(i - (2 << k));
             Merge(A[left : mid], A[mid : right])
 ```
 
